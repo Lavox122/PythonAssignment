@@ -7,38 +7,48 @@ import random
 def convertIMG(img):
     if img is None:
         return None
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    if len(img.shape) == 3 and img.shape[2] == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    elif len(img.shape) == 3 and img.shape[2] == 4:
+        img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
+    img = np.rot90(img)
     img = np.rot90(img)
     img = np.flipud(img)
-    return pygame.surfarray.make_surface(img)
 
-def resize(img, width, height):
+    return pygame.image.frombuffer(img.tobytes(), img.shape[1::-1], "RGBA")
+
+
+def resize(img, width, height, flip = False):
     if img is None:
         return None
+    
     img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+    if flip:
+        img = cv2.flip(img, 1)
     return convertIMG(img)
 
 #Level 1 coding
 #loading all the pictures
 #Player
-PlayerIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Idle.png')
-PlayerBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Block.png')
-PlayerPunchIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Punch.png')
+PlayerIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Idle.png', cv2.IMREAD_UNCHANGED)
+PlayerBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Block.png', cv2.IMREAD_UNCHANGED)
+PlayerPunchIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
 
 #Enemy
-EnemyIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Idle.png')
-EnemyBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Block.png')
-EnemyAttackWindUpIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack_Wind-up.png')
-EnemyAttackIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack.png')
+EnemyIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
+EnemyBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackWindUpIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
 
 #Resizing the images after conversion
-PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400)
-PlayerBlockIMG = resize(PlayerBlockIMG, 450, 450)
-PlayerPunchIMG = resize(PlayerPunchIMG, 600, 600)
+PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
+PlayerBlockIMG = resize(PlayerBlockIMG, 450, 450, flip= True)
+PlayerPunchIMG = resize(PlayerPunchIMG, 600, 600, flip= True)
 
-EnemyIdleIMG = resize(EnemyIdleIMG, 350, 500)
+EnemyIdleIMG = resize(EnemyIdleIMG, 350, 600)
 EnemyBlockIMG = resize(EnemyBlockIMG, 400, 400)
-EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 350, 500)
+EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 350, 600)
 EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
 
 #initialize the window
@@ -47,7 +57,7 @@ pygame.init()
 #Window resolution and size
 screen_width = 800
 screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.SRCALPHA)
 pygame.display.set_caption("Fighting Game")
 
 #frame rate
@@ -65,12 +75,12 @@ block_y = screen_height - 450
 
 #Enemy settings
 EnemyIdle_x = screen_width // 2 - 200
-EnemyIdle_y = screen_height - 500
+EnemyIdle_y = screen_height - 600
 
 EnemyAttackWindUp_x = screen_width // 2 - 200
-EnemyAttackWindUp_y = screen_height - 500
+EnemyAttackWindUp_y = screen_height - 600
 
-EnemyAttack_x = screen_width // 2 - 200
+EnemyAttack_x = screen_width // 2 - 300
 EnemyAttack_y = screen_height - 500
 
 #Punch settings (All numbers are in milliseconds)
@@ -89,8 +99,8 @@ EnemyAttackWindUp = False
 Enemy_attack_timer = 0
 EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 1000
-EnemyAttack_duration = 500
-Enemy_attack_cooldown = random.randint(1000, 5000)
+EnemyAttack_duration = 800
+Enemy_attack_cooldown = random.randint(2000, 5000)
 last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
@@ -141,7 +151,15 @@ while True:
         last_enemy_attack_time = current_time
         Enemy_attack_cooldown = random.randint(1000, 5000)
 
-    screen.fill((0, 0, 0))
+    screen.fill((0, 0, 0, 0))
+
+    #Enemy images
+    if EnemyAttackWindUp:
+        screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
+    elif EnemyAttacking:
+        screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
+    else:
+        screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
 
     #Player images
     if punching:
@@ -151,13 +169,6 @@ while True:
     else:
         screen.blit(PlayerIdleIMG, (idle_x, idle_y))
 
-    #Enemy images
-    if EnemyAttackWindUp:
-        screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
-    elif EnemyAttacking:
-        screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
-    else:
-        screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
 
     pygame.display.flip()
     clock.tick(60)
