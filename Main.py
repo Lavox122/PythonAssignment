@@ -2,6 +2,7 @@ import pygame
 import sys
 import cv2
 import numpy as np
+import random
 
 def convertIMG(img):
     if img is None:
@@ -35,10 +36,10 @@ PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400)
 PlayerBlockIMG = resize(PlayerBlockIMG, 450, 450)
 PlayerPunchIMG = resize(PlayerPunchIMG, 600, 600)
 
-EnemyIdleIMG = resize(EnemyIdleIMG, 400, 400)
+EnemyIdleIMG = resize(EnemyIdleIMG, 350, 500)
 EnemyBlockIMG = resize(EnemyBlockIMG, 400, 400)
-EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 400, 400)
-EnemyAttackIMG = resize(EnemyAttackIMG, 400, 400)
+EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 350, 500)
+EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
 
 #initialize the window
 pygame.init()
@@ -62,6 +63,16 @@ punch_y = screen_height - 600
 block_x = screen_width // 2 - 250
 block_y = screen_height - 450
 
+#Enemy settings
+EnemyIdle_x = screen_width // 2 - 200
+EnemyIdle_y = screen_height - 500
+
+EnemyAttackWindUp_x = screen_width // 2 - 200
+EnemyAttackWindUp_y = screen_height - 500
+
+EnemyAttack_x = screen_width // 2 - 200
+EnemyAttack_y = screen_height - 500
+
 #Punch settings (All numbers are in milliseconds)
 punching = False
 punch_timer = 0
@@ -71,6 +82,16 @@ last_punch_time = 0
 
 #Block settings
 blocking = False
+
+#Enemy AI system (pseudo-AI)
+EnemyAttacking = False
+EnemyAttackWindUp = False
+Enemy_attack_timer = 0
+EnemyAttackWindUp_timer = 0
+EnemyAttackWindUp_duration = 1000
+EnemyAttack_duration = 500
+Enemy_attack_cooldown = random.randint(1000, 5000)
+last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
 while True:
@@ -105,14 +126,38 @@ while True:
     if punching or (current_time - last_punch_time <= punch_cooldown):
         blocking = False
 
+    #Enemy AI part 2
+    if not EnemyAttacking and not EnemyAttackWindUp and (current_time - last_enemy_attack_time > Enemy_attack_cooldown):
+        EnemyAttackWindUp = True
+        EnemyAttackWindUp_timer = current_time
+
+    if EnemyAttackWindUp and (current_time - EnemyAttackWindUp_timer > EnemyAttackWindUp_duration):
+        EnemyAttackWindUp = False
+        EnemyAttacking = True
+        Enemy_attack_timer = current_time
+
+    if EnemyAttacking and (current_time - Enemy_attack_timer > EnemyAttack_duration):
+        EnemyAttacking = False
+        last_enemy_attack_time = current_time
+        Enemy_attack_cooldown = random.randint(1000, 5000)
+
     screen.fill((0, 0, 0))
 
+    #Player images
     if punching:
         screen.blit(PlayerPunchIMG, (punch_x, punch_y))
     elif blocking:
         screen.blit(PlayerBlockIMG, (block_x, block_y))
     else:
         screen.blit(PlayerIdleIMG, (idle_x, idle_y))
+
+    #Enemy images
+    if EnemyAttackWindUp:
+        screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
+    elif EnemyAttacking:
+        screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
+    else:
+        screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
 
     pygame.display.flip()
     clock.tick(60)
