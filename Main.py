@@ -24,8 +24,10 @@ def resize(img, width, height, flip = False):
         return None
     
     img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+
     if flip:
         img = cv2.flip(img, 1)
+
     return convertIMG(img)
 
 #Level 1 coding
@@ -41,6 +43,9 @@ EnemyBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Ene
 EnemyAttackWindUpIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
 EnemyAttackIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
 
+#Background Image
+BackgroundIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
+
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
 PlayerBlockIMG = resize(PlayerBlockIMG, 450, 450, flip= True)
@@ -48,8 +53,10 @@ PlayerPunchIMG = resize(PlayerPunchIMG, 600, 600, flip= True)
 
 EnemyIdleIMG = resize(EnemyIdleIMG, 350, 600)
 EnemyBlockIMG = resize(EnemyBlockIMG, 400, 400)
-EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 350, 600)
+EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 250, 600)
 EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
+
+BackgroundIMG = resize(BackgroundIMG, 800, 600)
 
 #initialize the window
 pygame.init()
@@ -59,7 +66,6 @@ screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.SRCALPHA)
 pygame.display.set_caption("Fighting Game")
-
 
 #Health system
 PlayerHealth = 3
@@ -82,17 +88,20 @@ block_y = screen_height - 450
 EnemyIdle_x = screen_width // 2 - 200
 EnemyIdle_y = screen_height - 600
 
-EnemyAttackWindUp_x = screen_width // 2 - 200
+EnemyAttackWindUp_x = screen_width // 2 - 125
 EnemyAttackWindUp_y = screen_height - 600
 
 EnemyAttack_x = screen_width // 2 - 300
 EnemyAttack_y = screen_height - 500
 
+EnemyBlocking_x = screen_width // 2 - 200
+EnemyBlocking_y = screen_height - 450
+
 #Punch settings (All numbers are in milliseconds)
 punching = False
 punch_timer = 0
 punch_duration = 300
-punch_cooldown = 1000
+punch_cooldown = 1500
 last_punch_time = 0
 
 #Block settings
@@ -105,7 +114,7 @@ Enemy_attack_timer = 0
 EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 1000
 EnemyAttack_duration = 800
-Enemy_attack_cooldown = random.randint(2000, 5000)
+Enemy_attack_cooldown = random.randint(4000, 6000)
 last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
@@ -152,11 +161,18 @@ while True:
         Enemy_attack_timer = current_time
 
     if EnemyAttacking and (current_time - Enemy_attack_timer > EnemyAttack_duration):
+        if not blocking:
+            PlayerHealth -= 1
+            print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
+        
         EnemyAttacking = False
         last_enemy_attack_time = current_time
         Enemy_attack_cooldown = random.randint(1000, 5000)
 
     screen.fill((0, 0, 0, 0))
+
+    #Background image
+    screen.blit(BackgroundIMG, (0,0))
 
     #Enemy images
     if EnemyAttackWindUp:
