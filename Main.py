@@ -71,6 +71,9 @@ pygame.display.set_caption("Fighting Game")
 PlayerHealth = 3
 EnemyHealth = 10
 
+#Controlling game over
+GameOver = False
+
 #frame rate
 clock = pygame.time.Clock()
 
@@ -119,77 +122,95 @@ last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
 while True:
-    current_time = pygame.time.get_ticks()
+    if not GameOver:
+        current_time = pygame.time.get_ticks()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-        #Left click (for punching)
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if not punching and (current_time - last_punch_time > punch_cooldown):
-                punching = True
-                punch_timer = current_time
+            #Left click (for punching)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if not punching and (current_time - last_punch_time > punch_cooldown):
+                    punching = True
+                    punch_timer = current_time
 
-        #Right click (for blocking)
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-            if not punching and (current_time - last_punch_time > punch_cooldown):
-                blocking = True
+            #Right click (for blocking)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                if not punching and (current_time - last_punch_time > punch_cooldown):
+                    blocking = True
 
-        #Release Right click (for stopping blocking)
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-            blocking = False
-    
-    #Punching animation cooldown
-    if punching and (current_time - punch_timer > punch_duration):
-        punching = False
-        last_punch_time = current_time
-
-    #Stops player from blocking when recently punched or is punching
-    if punching or (current_time - last_punch_time <= punch_cooldown):
-        blocking = False
-
-    #Enemy AI part 2
-    if not EnemyAttacking and not EnemyAttackWindUp and (current_time - last_enemy_attack_time > Enemy_attack_cooldown):
-        EnemyAttackWindUp = True
-        EnemyAttackWindUp_timer = current_time
-
-    if EnemyAttackWindUp and (current_time - EnemyAttackWindUp_timer > EnemyAttackWindUp_duration):
-        EnemyAttackWindUp = False
-        EnemyAttacking = True
-        Enemy_attack_timer = current_time
-
-    if EnemyAttacking and (current_time - Enemy_attack_timer > EnemyAttack_duration):
-        if not blocking:
-            PlayerHealth -= 1
-            print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
+            #Release Right click (for stopping blocking)
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+                blocking = False
         
-        EnemyAttacking = False
-        last_enemy_attack_time = current_time
-        Enemy_attack_cooldown = random.randint(1000, 5000)
+        #Punching animation cooldown
+        if punching and (current_time - punch_timer > punch_duration):
+            punching = False
+            last_punch_time = current_time
 
-    screen.fill((0, 0, 0, 0))
+        #Stops player from blocking when recently punched or is punching
+        if punching or (current_time - last_punch_time <= punch_cooldown):
+            blocking = False
 
-    #Background image
-    screen.blit(BackgroundIMG, (0,0))
+        #Enemy AI part 2
+        if not EnemyAttacking and not EnemyAttackWindUp and (current_time - last_enemy_attack_time > Enemy_attack_cooldown):
+            EnemyAttackWindUp = True
+            EnemyAttackWindUp_timer = current_time
 
-    #Enemy images
-    if EnemyAttackWindUp:
-        screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
-    elif EnemyAttacking:
-        screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
-    else:
-        screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
+        if EnemyAttackWindUp and (current_time - EnemyAttackWindUp_timer > EnemyAttackWindUp_duration):
+            EnemyAttackWindUp = False
+            EnemyAttacking = True
+            Enemy_attack_timer = current_time
 
-    #Player images
-    if punching:
-        screen.blit(PlayerPunchIMG, (punch_x, punch_y))
-    elif blocking:
-        screen.blit(PlayerBlockIMG, (block_x, block_y))
-    else:
-        screen.blit(PlayerIdleIMG, (idle_x, idle_y))
+        if EnemyAttacking and (current_time - Enemy_attack_timer > EnemyAttack_duration):
+            if not blocking:
+                PlayerHealth -= 1
+                print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
+            
+            EnemyAttacking = False
+            last_enemy_attack_time = current_time
+            Enemy_attack_cooldown = random.randint(1000, 5000)
 
+        #Set it so the game over runs
+        if PlayerHealth <= 0:
+            GameOver = True
+            
+        screen.fill((0, 0, 0, 0))
 
-    pygame.display.flip()
-    clock.tick(60)
+        #Background image
+        screen.blit(BackgroundIMG, (0,0))
+
+        #Enemy images
+        if EnemyAttackWindUp:
+            screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
+        elif EnemyAttacking:
+            screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
+        else:
+            screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
+
+        #Player images
+        if punching:
+            screen.blit(PlayerPunchIMG, (punch_x, punch_y))
+        elif blocking:
+            screen.blit(PlayerBlockIMG, (block_x, block_y))
+        else:
+            screen.blit(PlayerIdleIMG, (idle_x, idle_y))
+
+        #Health effects
+        if PlayerHealth < 3:
+            overlay = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+            intensity = int(150 * (1 - (PlayerHealth / 3)))
+            overlay.fill((255, 0, 0, intensity))
+            screen.blit(overlay, (0, 0))
+
+        #Game Over
+        if GameOver:
+            font = pygame.font.Font(None, 72)
+            text = font.render("You fainted", True, (255, 255, 255))
+            text_rect = text.get_rect(center=(screen_width//2, screen_height//2))
+            screen.blit(text, text_rect)
+
+        pygame.display.flip()
+        clock.tick(60)
