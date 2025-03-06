@@ -35,16 +35,16 @@ def resize(img, width, height, flip = False):
 #Player
 PlayerIdleIMG = cv2.imread("Images\\Player\\Idle.png", cv2.IMREAD_UNCHANGED)
 PlayerBlockIMG = cv2.imread('Images\\Player\\Block.png', cv2.IMREAD_UNCHANGED)
-PlayerPunchIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
+PlayerPunchIMG = cv2.imread('Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
 
 #Enemy
-EnemyIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
-EnemyBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
-EnemyAttackWindUpIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
-EnemyAttackIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
+EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
+EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackWindUpIMG = cv2.imread('Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
 
 #Background Image
-BackgroundIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
+BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
 
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
@@ -78,7 +78,7 @@ GameOver = False
 clock = pygame.time.Clock()
 
 #Player settings
-idle_x = screen_width // 2 - 25
+idle_x = screen_width // 2 + 10
 idle_y = screen_height - 350
 
 punch_x = screen_width // 2 - 200
@@ -116,7 +116,7 @@ EnemyAttackWindUp = False
 Enemy_attack_timer = 0
 EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 1000
-EnemyAttack_duration = 800
+EnemyAttack_duration = 500
 Enemy_attack_cooldown = random.randint(4000, 6000)
 last_enemy_attack_time = pygame.time.get_ticks()
 
@@ -205,17 +205,19 @@ while True:
 
         #Game Over
     else:
+        #The "You Fainted" text
         font = pygame.font.Font(None, 72)
         text = font.render("You fainted", True, (255, 255, 255))
-        text_rect = text.get_rect(center=(screen_width//2, screen_height//2))
+        text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
         screen.blit(text, text_rect)
 
+        #Retry Button
         button_width = 200
         button_height = 50
         button_x = (screen_width - button_width) // 2
-        button_y = screen_height // 2 + 50
-        button_color = (0, 0, 255)
-        button_text_color = (255, 255, 255)
+        button_y = screen_height // 2 - 10
+        button_color = (255, 255, 255)
+        button_text_color = (0, 0, 0)
 
         pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
         font = pygame.font.Font(None, 36)
@@ -223,17 +225,54 @@ while True:
         text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
         screen.blit(button_text, text_rect)
 
+        #Quit Button
+        quit_button_y = button_y + button_height + 20
+        pygame.draw.rect(screen, button_color, (button_x, quit_button_y, button_width, button_height))
+        quit_text = font.render("Quit", True, button_text_color)
+        quit_text_rect = quit_text.get_rect(center=(button_x + button_width//2, quit_button_y + button_height//2))
+        screen.blit(quit_text, quit_text_rect)
+
+        #Mouse position tracking
         mouse_x, mouse_y = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()
+
+        hover_color = (200, 200, 200)
+        click_color = (150, 150, 150)
+
+        #Retry button function
+        retry_hover = button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height
+        retry_click = retry_hover and mouse_pressed[0]
+        retry_display_color = click_color if retry_click else hover_color if retry_hover else button_color
+        
+        pygame.draw.rect(screen, retry_display_color, (button_x, button_y, button_width, button_height))
+        button_text = font.render("Retry", True, button_text_color)
+        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
+        screen.blit(button_text, text_rect)
+
         if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
             if mouse_pressed[0]:
                 PlayerHealth = 3
-                EnemyHealth = 10
+                EnemyHealth = 11
                 GameOver = False
-                last_punch_time = 500
+                last_punch_time = 0
                 last_enemy_attack_time = pygame.time.get_ticks()
                 EnemyAttacking = False
                 EnemyAttackWindUp = False
+
+        #Quit button function
+        quit_hover = button_x <= mouse_x <= button_x + button_width and quit_button_y <= mouse_y <= quit_button_y + button_height
+        quit_click = quit_hover and mouse_pressed[0]
+        quit_display_color = click_color if quit_click else hover_color if quit_hover else button_color
+        
+        pygame.draw.rect(screen, quit_display_color, (button_x, quit_button_y, button_width, button_height))
+        quit_text = font.render("Quit", True, button_text_color)
+        quit_text_rect = quit_text.get_rect(center=(button_x + button_width//2, quit_button_y + button_height//2))
+        screen.blit(quit_text, quit_text_rect)
+        
+        if button_x <= mouse_x <= button_x + button_width and quit_button_y <= mouse_y <= quit_button_y + button_height:
+            if mouse_pressed[0]:
+                pygame.quit()
+                sys.exit()
 
     pygame.display.flip()
     clock.tick(60)
