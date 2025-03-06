@@ -176,7 +176,7 @@ while True:
         #Set it so the game over runs
         if PlayerHealth <= 0:
             GameOver = True
-            
+
         screen.fill((0, 0, 0, 0))
 
         #Background image
@@ -211,6 +211,31 @@ while True:
             text = font.render("You fainted", True, (255, 255, 255))
             text_rect = text.get_rect(center=(screen_width//2, screen_height//2))
             screen.blit(text, text_rect)
+
+            button_width = 200
+            button_height = 50
+            button_x = (screen_width - button_width) // 2
+            button_y = screen_height // 2 + 50
+            button_color = (0, 0, 255)
+            button_text_color = (255, 255, 255)
+
+            pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
+            font = pygame.font.Font(None, 36)
+            button_text = font.render("Retry", True, button_text_color)
+            text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
+            screen.blit(button_text, text_rect)
+
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            mouse_pressed = pygame.mouse.get_pressed()
+            if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+                if mouse_pressed[0]:
+                    PlayerHealth = 3
+                    EnemyHealth = 10
+                    GameOver = False
+                    last_punch_time = 0
+                    last_enemy_attack_time = pygame.time.get_ticks()
+                    EnemyAttacking = False
+                    EnemyAttackWindUp = False
 
         pygame.display.flip()
         clock.tick(60)
