@@ -60,6 +60,11 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.SRCALPHA)
 pygame.display.set_caption("Fighting Game")
 
+
+#Health system
+PlayerHealth = 3
+EnemyHealth = 10
+
 #frame rate
 clock = pygame.time.Clock()
 
