@@ -33,8 +33,8 @@ def resize(img, width, height, flip = False):
 #Level 1 coding
 #loading all the pictures
 #Player
-PlayerIdleIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Idle.png', cv2.IMREAD_UNCHANGED)
-PlayerBlockIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Block.png', cv2.IMREAD_UNCHANGED)
+PlayerIdleIMG = cv2.imread("Images\\Player\\Idle.png", cv2.IMREAD_UNCHANGED)
+PlayerBlockIMG = cv2.imread('Images\\Player\\Block.png', cv2.IMREAD_UNCHANGED)
 PlayerPunchIMG = cv2.imread('D:\\PythonAssignments\\PythonAssignment\\Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
 
 #Enemy
@@ -122,28 +122,26 @@ last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
 while True:
+    current_time = pygame.time.get_ticks()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
     if not GameOver:
-        current_time = pygame.time.get_ticks()
+        #Left click (for punching)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if not punching and (current_time - last_punch_time > punch_cooldown):
+                punching = True
+                punch_timer = current_time
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        #Right click (for blocking)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            if not punching and (current_time - last_punch_time > punch_cooldown):
+                blocking = True
 
-            #Left click (for punching)
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if not punching and (current_time - last_punch_time > punch_cooldown):
-                    punching = True
-                    punch_timer = current_time
-
-            #Right click (for blocking)
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                if not punching and (current_time - last_punch_time > punch_cooldown):
-                    blocking = True
-
-            #Release Right click (for stopping blocking)
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-                blocking = False
+        #Release Right click (for stopping blocking)
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+            blocking = False
         
         #Punching animation cooldown
         if punching and (current_time - punch_timer > punch_duration):
@@ -206,36 +204,36 @@ while True:
             screen.blit(overlay, (0, 0))
 
         #Game Over
-        if GameOver:
-            font = pygame.font.Font(None, 72)
-            text = font.render("You fainted", True, (255, 255, 255))
-            text_rect = text.get_rect(center=(screen_width//2, screen_height//2))
-            screen.blit(text, text_rect)
+    else:
+        font = pygame.font.Font(None, 72)
+        text = font.render("You fainted", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(screen_width//2, screen_height//2))
+        screen.blit(text, text_rect)
 
-            button_width = 200
-            button_height = 50
-            button_x = (screen_width - button_width) // 2
-            button_y = screen_height // 2 + 50
-            button_color = (0, 0, 255)
-            button_text_color = (255, 255, 255)
+        button_width = 200
+        button_height = 50
+        button_x = (screen_width - button_width) // 2
+        button_y = screen_height // 2 + 50
+        button_color = (0, 0, 255)
+        button_text_color = (255, 255, 255)
 
-            pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
-            font = pygame.font.Font(None, 36)
-            button_text = font.render("Retry", True, button_text_color)
-            text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
-            screen.blit(button_text, text_rect)
+        pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
+        font = pygame.font.Font(None, 36)
+        button_text = font.render("Retry", True, button_text_color)
+        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
+        screen.blit(button_text, text_rect)
 
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            mouse_pressed = pygame.mouse.get_pressed()
-            if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
-                if mouse_pressed[0]:
-                    PlayerHealth = 3
-                    EnemyHealth = 10
-                    GameOver = False
-                    last_punch_time = 0
-                    last_enemy_attack_time = pygame.time.get_ticks()
-                    EnemyAttacking = False
-                    EnemyAttackWindUp = False
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+            if mouse_pressed[0]:
+                PlayerHealth = 3
+                EnemyHealth = 10
+                GameOver = False
+                last_punch_time = 500
+                last_enemy_attack_time = pygame.time.get_ticks()
+                EnemyAttacking = False
+                EnemyAttackWindUp = False
 
-        pygame.display.flip()
-        clock.tick(60)
+    pygame.display.flip()
+    clock.tick(60)
