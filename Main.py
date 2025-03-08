@@ -98,13 +98,13 @@ EnemyAttack_x = screen_width // 2 - 300
 EnemyAttack_y = screen_height - 500
 
 EnemyBlocking_x = screen_width // 2 - 200
-EnemyBlocking_y = screen_height - 450
+EnemyBlocking_y = screen_height - 600
 
 #Punch settings (All numbers are in milliseconds)
 punching = False
 punch_timer = 0
 punch_duration = 300
-punch_cooldown = 1500
+punch_cooldown = 1200
 last_punch_time = 0
 
 #Block settings
@@ -113,11 +113,14 @@ blocking = False
 #Enemy AI system (pseudo-AI)
 EnemyAttacking = False
 EnemyAttackWindUp = False
-Enemy_attack_timer = 0
+EnemyBlocking = False
+EnemyAttack_timer = 0
 EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 1000
 EnemyAttack_duration = 500
-Enemy_attack_cooldown = random.randint(4000, 6000)
+EnemyBlock_duration = random.randint(5000, 10000)
+EnemyAttack_cooldown = random.randint(4000, 6000)
+EnemyBlock_cooldown = 2000
 last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
@@ -148,28 +151,43 @@ while True:
             punching = False
             last_punch_time = current_time
 
+        #Reduce enemy health when punching (doesn't work when enemy blocking)
+            if not EnemyBlocking:
+                EnemyHealth -= 1
+                print(f"Enemy Health: {EnemyHealth}") #this is only for debugging purposes
+
         #Stops player from blocking when recently punched or is punching
         if punching or (current_time - last_punch_time <= punch_cooldown):
             blocking = False
 
         #Enemy AI part 2
-        if not EnemyAttacking and not EnemyAttackWindUp and (current_time - last_enemy_attack_time > Enemy_attack_cooldown):
-            EnemyAttackWindUp = True
-            EnemyAttackWindUp_timer = current_time
+        if not EnemyAttacking and not EnemyAttackWindUp and (current_time - last_enemy_attack_time > EnemyAttack_cooldown):
+            action_choice = random.choice(["Attack", "Block"])
+            if action_choice == "Attack":
+                EnemyAttackWindUp = True
+                EnemyAttackWindUp_timer = current_time
+            elif action_choice == "Block":
+                EnemyBlocking = True
+                EnemyBlock_timer = current_time
 
         if EnemyAttackWindUp and (current_time - EnemyAttackWindUp_timer > EnemyAttackWindUp_duration):
             EnemyAttackWindUp = False
             EnemyAttacking = True
-            Enemy_attack_timer = current_time
+            EnemyAttack_timer = current_time
 
-        if EnemyAttacking and (current_time - Enemy_attack_timer > EnemyAttack_duration):
+        if EnemyAttacking and (current_time - EnemyAttack_timer > EnemyAttack_duration):
             if not blocking:
                 PlayerHealth -= 1
                 print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
             
             EnemyAttacking = False
             last_enemy_attack_time = current_time
-            Enemy_attack_cooldown = random.randint(1000, 5000)
+            EnemyAttack_cooldown = random.randint(1000, 5000)
+
+        if EnemyBlocking and (current_time - EnemyBlock_timer > EnemyBlock_duration):
+            EnemyBlocking = False
+            last_enemy_attack_time = current_time
+            EnemyAttack_cooldown = random.randint(5000, 7000)
 
         #Set it so the game over runs
         if PlayerHealth <= 0:
@@ -185,6 +203,8 @@ while True:
             screen.blit(EnemyAttackWindUpIMG, (EnemyAttackWindUp_x, EnemyAttackWindUp_y))
         elif EnemyAttacking:
             screen.blit(EnemyAttackIMG, (EnemyAttack_x, EnemyAttack_y))
+        elif EnemyBlocking:
+            screen.blit(EnemyBlockIMG, (EnemyBlocking_x, EnemyBlocking_y))
         else:
             screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
 
