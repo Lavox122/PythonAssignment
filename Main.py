@@ -31,11 +31,15 @@ def resize(img, width, height, flip = False):
     return convertIMG(img)
 
 #Level 1 coding
-#loading all the pictures
+#loading all the pictures, sounds, and animation
 #Player
 PlayerIdleIMG = cv2.imread("Images\\Player\\Idle.png", cv2.IMREAD_UNCHANGED)
 PlayerBlockIMG = cv2.imread('Images\\Player\\Block.png', cv2.IMREAD_UNCHANGED)
 PlayerPunchIMG = cv2.imread('Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
+
+#Player Sound Effects
+PlayerPunchAud = pygame.mixer.Sound('Audio\\Player\\PlayerPunchingSound1.mp3')
+PlayerBlockAud = pygame.mixer.Sound('Audio\\Player\\PlayerBlockingSound.mp3')
 
 #Enemy
 EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
@@ -43,8 +47,15 @@ EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHAN
 EnemyAttackWindUpIMG = cv2.imread('Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
 EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
 
+#Enemy Sound Effects
+EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
+EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.mp3')
+
 #Background Image
 BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
+
+#Background Ambience
+BackgroundAud= pygame.mixer.Sound('Audio\\Background\\BackgroundAmbience.mp3')
 
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
@@ -57,6 +68,7 @@ EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 250, 600)
 EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
 
 BackgroundIMG = resize(BackgroundIMG, 800, 600)
+
 
 #initialize the window
 pygame.init()
