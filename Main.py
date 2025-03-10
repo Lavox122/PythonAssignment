@@ -96,7 +96,7 @@ BackgroundIMG = resize(BackgroundIMG, 800, 600)
 
 #Animation Settings
 frame_index = 0
-animation_speed = 5
+animation_speed = 100
 last_update = pygame.time.get_ticks()
 
 #initialize the window
@@ -203,15 +203,6 @@ while True:
 
                 PlayerPunchAud.play()
 
-                for frame in PlayerPunchGIF:
-                    screen.fill((0, 0, 0, 0))  # Clear the screen
-                    screen.blit(BackgroundIMG, (0, 0))  # Draw the background
-                    screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))  # Draw the enemy idle image
-                    screen.blit(frame, (PunchEffect_x, PunchEffect_y))  # Draw the punch effect behind the player
-                    screen.blit(PlayerPunchIMG, (punch_x, punch_y))  # Draw the player punch image
-                    pygame.display.flip()
-                    pygame.time.delay(50)
-
         #Stops player from blocking when recently punched or is punching
         if punching or (current_time - last_punch_time <= punch_cooldown):
             blocking = False
@@ -266,7 +257,12 @@ while True:
 
         #Player images
         if punching:
-            screen.blit(PlayerPunchIMG, (punch_x, punch_y))
+                if current_time - last_update > animation_speed:
+                    frame_index = (frame_index + 1) % len(PlayerPunchGIF)
+                    last_update = current_time
+                    
+                screen.blit(PlayerPunchGIF[frame_index], (PunchEffect_x, PunchEffect_y))
+                screen.blit(PlayerPunchIMG, (punch_x, punch_y))
         elif blocking:
             screen.blit(PlayerBlockIMG, (block_x, block_y))
         else:
