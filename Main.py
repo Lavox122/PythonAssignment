@@ -1,8 +1,11 @@
 import pygame
 import sys
+from PIL import Image
 import cv2
 import numpy as np
 import random
+
+pygame.mixer.init()
 
 def convertIMG(img):
     if img is None:
@@ -30,6 +33,22 @@ def resize(img, width, height, flip = False):
 
     return convertIMG(img)
 
+def GifLoading(file_path, width, height):
+    gif = Image.open(file_path)
+    frames = []
+
+    try:
+        while True:
+            frame = gif.convert("RGBA")
+            frame = frame.resize((width, height), Image.LANCZOS)
+            pygame_frame = pygame.image.fromstring(frame.tobytes(), frame.size, "RGBA")
+            frames.append(pygame_frame)
+            gif.seek(gif.tell() + 1)
+    except EOFError:
+        pass
+
+    return frames
+
 #Level 1 coding
 #loading all the pictures, sounds, and animation
 #Player
@@ -41,6 +60,9 @@ PlayerPunchIMG = cv2.imread('Images\\Player\\Punch.png', cv2.IMREAD_UNCHANGED)
 PlayerPunchAud = pygame.mixer.Sound('Audio\\Player\\PlayerPunchingSound1.mp3')
 PlayerBlockAud = pygame.mixer.Sound('Audio\\Player\\PlayerBlockingSound.mp3')
 
+#Player Animation Effects
+PlayerPunchGIF = GifLoading('Images\\Effect\\PunchingEnemy\\Punching_Enemy.gif', 350, 350)
+
 #Enemy
 EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
 EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
@@ -49,7 +71,10 @@ EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCH
 
 #Enemy Sound Effects
 EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
-EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.mp3')
+EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
+
+#Enemy Animation Effects
+EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\EnemyPunching.gif', 600, 600)
 
 #Background Image
 BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
@@ -69,6 +94,10 @@ EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
 
 BackgroundIMG = resize(BackgroundIMG, 800, 600)
 
+#Animation Settings
+frame_index = 0
+animation_speed = 5
+last_update = pygame.time.get_ticks()
 
 #initialize the window
 pygame.init()
@@ -111,6 +140,10 @@ EnemyAttack_y = screen_height - 500
 
 EnemyBlocking_x = screen_width // 2 - 200
 EnemyBlocking_y = screen_height - 600
+
+#Effect size settings
+PunchEffect_x = screen_width // 2 - 125
+PunchEffect_y = screen_height - 450
 
 #Punch settings (All numbers are in milliseconds)
 punching = False
@@ -167,6 +200,17 @@ while True:
             if not EnemyBlocking:
                 EnemyHealth -= 1
                 print(f"Enemy Health: {EnemyHealth}") #this is only for debugging purposes
+
+                PlayerPunchAud.play()
+
+                for frame in PlayerPunchGIF:
+                    screen.fill((0, 0, 0, 0))  # Clear the screen
+                    screen.blit(BackgroundIMG, (0, 0))  # Draw the background
+                    screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))  # Draw the enemy idle image
+                    screen.blit(frame, (PunchEffect_x, PunchEffect_y))  # Draw the punch effect behind the player
+                    screen.blit(PlayerPunchIMG, (punch_x, punch_y))  # Draw the player punch image
+                    pygame.display.flip()
+                    pygame.time.delay(50)
 
         #Stops player from blocking when recently punched or is punching
         if punching or (current_time - last_punch_time <= punch_cooldown):
