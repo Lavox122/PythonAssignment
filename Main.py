@@ -63,6 +63,10 @@ PlayerBlockAud = pygame.mixer.Sound('Audio\\Player\\PlayerBlockingSound.mp3')
 #Player Animation Effects
 PlayerPunchGIF = GifLoading('Images\\Effect\\PunchingEnemy\\Punching_Enemy.gif', 350, 350)
 
+#Player Low Health Sound Effects
+PlayerLowAud = pygame.mixer.Sound('Audio\\Player\\LowHealth.mp3')
+PlayerLowAud.set_volume(0.5)
+
 #Enemy
 EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
 EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
@@ -81,6 +85,7 @@ BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCH
 
 #Background Ambience
 BackgroundAud= pygame.mixer.Sound('Audio\\Background\\BackgroundAmbience.mp3')
+BackgroundAud.set_volume(0.1)
 
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
@@ -116,10 +121,13 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.SRCALPHA)
 pygame.display.set_caption("Fighting Game")
 
+BackgroundAud.play(loops=-1)
+
 #Health system
 PlayerHealth = 3
 EnemyHealth = 10
 playerDamaged = False
+LowHealth = False
 
 #Controlling game over
 GameOver = False
@@ -239,6 +247,8 @@ while True:
                     EnemyPunchAud.play()
                     EnemyPunchGIF_start_time = current_time
                     EnemyAttackFrame_index = 1
+                elif blocking:
+                    PlayerBlockAud.play()
 
             if EnemyAttacking and (current_time - EnemyAttack_timer > EnemyAttack_duration):
                 if not blocking:
@@ -255,6 +265,13 @@ while True:
             EnemyBlocking = False
             last_enemy_attack_time = current_time
             EnemyAttack_cooldown = random.randint(5000, 7000)
+
+        if PlayerHealth == 1 and not LowHealth:
+            PlayerLowAud.play(loops=-1)
+            LowHealth = True
+        elif PlayerHealth != 1 and LowHealth:
+            PlayerLowAud.stop()
+            LowHealth = False
 
         #Set it so the game over runs
         if PlayerHealth <= 0:
