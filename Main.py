@@ -1,5 +1,6 @@
 import pygame
 import sys
+import subprocess
 from PIL import Image
 import cv2
 import numpy as np
@@ -131,6 +132,7 @@ LowHealth = False
 
 #Controlling game over
 GameOver = False
+Victory = False
 
 #frame rate
 clock = pygame.time.Clock()
@@ -195,13 +197,15 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    if not GameOver:
+    if not GameOver and not Victory:
         #Left click (for punching)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if not punching and (current_time - last_punch_time > punch_cooldown):
                 punching = True
                 punch_timer = current_time
                 PlayerPunchAud.play()
+                PlayerAttackFrame_index = 0
+                PlayerAttackLast_update = current_time
 
         #Right click (for blocking)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
@@ -246,7 +250,7 @@ while True:
                 if not blocking:
                     EnemyPunchAud.play()
                     EnemyPunchGIF_start_time = current_time
-                    EnemyAttackFrame_index = 1
+                    EnemyAttackFrame_index = 0
                 elif blocking:
                     PlayerBlockAud.play()
 
@@ -276,6 +280,9 @@ while True:
         #Set it so the game over runs
         if PlayerHealth <= 0:
             GameOver = True
+
+        if EnemyHealth <= 0:
+            Victory = True
 
         screen.fill((0, 0, 0, 0))
 
@@ -320,7 +327,7 @@ while True:
             screen.blit(overlay, (0, 0))
 
         #Game Over
-    else:
+    elif GameOver:
         #The "You Fainted" text
         font = pygame.font.Font(None, 72)
         text = font.render("You fainted", True, (255, 255, 255))
@@ -389,6 +396,48 @@ while True:
             if mouse_pressed[0]:
                 pygame.quit()
                 sys.exit()
+                
+    elif Victory:
+        # The "You Win!" text
+        font = pygame.font.Font(None, 72)
+        text = font.render("You win", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
+        screen.blit(text, text_rect)
 
+        # Continue Button
+        button_width = 200
+        button_height = 50
+        button_x = (screen_width - button_width) // 2
+        button_y = screen_height // 2 - 10
+        button_color = (255, 255, 255)
+        button_text_color = (0, 0, 0)
+
+        pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
+        font = pygame.font.Font(None, 36)
+        button_text = font.render("Continue", True, button_text_color)
+        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
+        screen.blit(button_text, text_rect)
+
+        # Mouse position tracking
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+
+        hover_color = (200, 200, 200)
+        click_color = (150, 150, 150)
+
+        # Continue button function
+        continue_hover = button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height
+        continue_click = continue_hover and mouse_pressed[0]
+        continue_display_color = click_color if continue_click else hover_color if continue_hover else button_color
+
+        pygame.draw.rect(screen, continue_display_color, (button_x, button_y, button_width, button_height))
+        button_text = font.render("Continue", True, button_text_color)
+        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
+        screen.blit(button_text, text_rect)
+
+        if continue_click:
+            pygame.quit()
+            subprocess.run(["python", "level2.py"])
+            sys.exit()
     pygame.display.flip()
     clock.tick(60)
