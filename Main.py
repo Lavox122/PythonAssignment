@@ -81,6 +81,9 @@ EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
 #Enemy Animation Effects
 EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\EnemyPunching.gif', 400, 400)
 
+#universal block effect
+BlockGIF = GifLoading('Images\\Effect\\Blocking\\Blocking.gif', 400, 400)
+
 #Background Image
 BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCHANGED)
 
@@ -90,7 +93,7 @@ BackgroundAud.set_volume(0.1)
 
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
-PlayerBlockIMG = resize(PlayerBlockIMG, 450, 450, flip= True)
+PlayerBlockIMG = resize(PlayerBlockIMG, 600, 600, flip= True)
 PlayerPunchIMG = resize(PlayerPunchIMG, 600, 600, flip= True)
 
 EnemyIdleIMG = resize(EnemyIdleIMG, 350, 600)
@@ -112,6 +115,8 @@ EnemyAttackLast_update = pygame.time.get_ticks()
 EnemyAttackGIF_duration = len(EnemyPunchGIF) * animation_speed
 EnemyPunchGIF_start_time = 0
 
+BlockFrame_index = 0
+BlockLast_update = pygame.time.get_ticks()
 
 #initialize the window
 pygame.init()
@@ -145,7 +150,7 @@ punch_x = screen_width // 2 - 200
 punch_y = screen_height - 600
 
 block_x = screen_width // 2 - 250
-block_y = screen_height - 450
+block_y = screen_height - 600
 
 #Enemy settings
 EnemyIdle_x = screen_width // 2 - 200
@@ -166,6 +171,9 @@ PunchEffect_y = screen_height - 450
 
 EnemyPunchEffect_x = screen_width // 2 - 175
 EnemyPunchEffect_y = screen_height - 525
+
+BlockGIF_x = screen_width // 2 - 150
+BlockGIF_y = screen_height - 450
 
 #Punch settings (All numbers are in milliseconds)
 punching = False
@@ -203,9 +211,12 @@ while True:
             if not punching and (current_time - last_punch_time > punch_cooldown):
                 punching = True
                 punch_timer = current_time
-                PlayerPunchAud.play()
                 PlayerAttackFrame_index = 0
                 PlayerAttackLast_update = current_time
+                if not EnemyBlocking:
+                    PlayerPunchAud.play()
+                elif EnemyBlocking:
+                    PlayerBlockAud.play()
 
         #Right click (for blocking)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
@@ -305,19 +316,34 @@ while True:
             screen.blit(EnemyBlockIMG, (EnemyBlocking_x, EnemyBlocking_y))
         else:
             screen.blit(EnemyIdleIMG, (EnemyIdle_x, EnemyIdle_y))
+            
 
         #Player images
         if punching:
+            if EnemyBlocking:
+                if current_time - BlockLast_update > animation_speed:
+                    BlockFrame_index = (BlockFrame_index + 1) % len(BlockGIF)
+                    BlockLast_update = current_time
+                screen.blit(BlockGIF[BlockFrame_index], (BlockGIF_x, BlockGIF_y))
+                screen.blit(PlayerPunchIMG, (punch_x, punch_y))
+            else:
                 if current_time - PlayerAttackLast_update > animation_speed:
                     PlayerAttackFrame_index = (PlayerAttackFrame_index + 1) % len(PlayerPunchGIF)
                     PlayerAttackLast_update = current_time
-                    
                 screen.blit(PlayerPunchGIF[PlayerAttackFrame_index], (PunchEffect_x, PunchEffect_y))
                 screen.blit(PlayerPunchIMG, (punch_x, punch_y))
         elif blocking:
             screen.blit(PlayerBlockIMG, (block_x, block_y))
         else:
             screen.blit(PlayerIdleIMG, (idle_x, idle_y))
+
+        if EnemyAttacking and blocking:
+            if current_time - BlockLast_update > animation_speed:
+                BlockFrame_index = (BlockFrame_index + 1) % len(BlockGIF)
+                BlockLast_update = current_time
+            screen.blit(BlockGIF[BlockFrame_index], (BlockGIF_x, BlockGIF_y))
+            screen.blit(PlayerBlockIMG, (block_x, block_y))
+
 
         #Health effects
         if PlayerHealth < 3:
