@@ -74,6 +74,20 @@ EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHAN
 EnemyAttackWindUpIMG = cv2.imread('Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
 EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
 
+# Define the circle radius
+circle_radius = 25  # Adjust this value as needed
+
+# Load the EnemyIcon
+EnemyIcon = cv2.imread('Images\\Enemy\\Level1\\EnemyIcon.png', cv2.IMREAD_UNCHANGED)
+
+# Resize the EnemyIcon proportionally to fit inside the circle
+icon_height, icon_width = EnemyIcon.shape[:2]
+circle_diameter = 2 * circle_radius  # Diameter of the circle
+scale = max(circle_diameter / icon_width, circle_diameter / icon_height)  # Scale to fill the circle more fully
+new_width = int(icon_width * scale)
+new_height = int(icon_height * scale)
+EnemyIcon = resize(EnemyIcon, new_width, new_height)
+
 #Enemy Sound Effects
 EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
@@ -299,6 +313,39 @@ while True:
 
         #Background image
         screen.blit(BackgroundIMG, (0,0))
+        
+        # Draw the health bar
+        health_bar_width = 200
+        health_bar_height = 20
+        health_bar_x = 20
+        health_bar_y = 20
+        health_bar_border_color = (255, 255, 255)
+        health_bar_fill_color = (255, 0, 0)
+
+        # Draw the border of the health bar
+        pygame.draw.rect(screen, health_bar_border_color, (health_bar_x, health_bar_y, health_bar_width, health_bar_height), 2)
+
+        # Calculate the width of the filled portion based on PlayerHealth
+        filled_width = int((EnemyHealth / 10) * health_bar_width)
+
+        # Draw the filled portion of the health bar
+        pygame.draw.rect(screen, health_bar_fill_color, (health_bar_x, health_bar_y, filled_width, health_bar_height))
+        
+        # Draw the circle for the EnemyIcon
+        circle_x = health_bar_x + health_bar_width + 40  # Position next to the health bar
+        circle_y = health_bar_y + health_bar_height // 2
+        circle_radius = 25
+        circle_color = (255, 255, 255)
+
+        pygame.draw.circle(screen, circle_color, (circle_x, circle_y), circle_radius)
+
+        # Create a circular mask for the EnemyIcon
+        icon_surface = pygame.Surface((circle_diameter, circle_diameter), pygame.SRCALPHA)
+        pygame.draw.circle(icon_surface, (255, 255, 255, 255), (circle_radius, circle_radius), circle_radius)
+        icon_surface.blit(EnemyIcon, (circle_radius - new_width // 2 + 18, circle_radius - new_height // 2), special_flags=pygame.BLEND_RGBA_MIN)
+
+        # Blit the masked EnemyIcon onto the screen
+        screen.blit(icon_surface, (circle_x - circle_radius, circle_y - circle_radius))
 
         #Enemy images
         if EnemyAttackWindUp:
