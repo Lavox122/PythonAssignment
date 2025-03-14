@@ -92,6 +92,7 @@ EnemyIcon = resize(EnemyIcon, new_width, new_height)
 EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
+BoxingBellAud.set_volume(0.4)
 
 #Enemy Animation Effects
 EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\EnemyPunching.gif', 400, 400)
