@@ -37,7 +37,7 @@ exit_button_y = 400
 def main_menu():
     while True:
         # Draw the background image
-        screen.blit(background_image, (0, 0))
+        #screen.blit(background_image, (0, 0))
 
         # Draw the title
         title_text = title_font.render("Underground Arena", True, black)
