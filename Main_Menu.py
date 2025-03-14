@@ -30,7 +30,7 @@ exit_button_x = (screen_width - button_width) // 2
 exit_button_y = 400
 
 # Load the background image
-background_image = pygame.image.load("D:/New folder/PythonAssignment/Images/Background/Main_Menu_Background.jpg")
+background_image = pygame.image.load("Images\\Background\\Main_Menu_Background.jpg")
 background_image = pygame.transform.scale(background_image, (screen_width, screen_height))  # Scale to fit the screen
 
 # Main menu loop
