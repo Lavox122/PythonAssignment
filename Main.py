@@ -91,6 +91,7 @@ EnemyIcon = resize(EnemyIcon, new_width, new_height)
 #Enemy Sound Effects
 EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
+BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 
 #Enemy Animation Effects
 EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\EnemyPunching.gif', 400, 400)
@@ -308,6 +309,25 @@ while True:
 
         if EnemyHealth <= 0:
             Victory = True
+            BoxingBellAud.play()  # Play the boxing bell sound effect
+        
+            # Fadeout effect
+            font = pygame.font.Font(None, 72)
+            text = font.render("You Win!", True, (255, 255, 255))
+            text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
+
+            for alpha in range(0, 255, 5):  # Gradually increase opacity
+                # Draw the background and "You Win!" text
+                screen.blit(BackgroundIMG, (0, 0))
+                screen.blit(text, text_rect)
+
+                # Draw the fadeout overlay
+                fade_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+                fade_surface.fill((0, 0, 0, alpha))  # Black fade
+                screen.blit(fade_surface, (0, 0))
+
+                pygame.display.flip()
+                pygame.time.delay(50)  # Delay for smooth fadeout
 
         screen.fill((0, 0, 0, 0))
 
@@ -330,6 +350,22 @@ while True:
 
         # Draw the filled portion of the health bar
         pygame.draw.rect(screen, health_bar_fill_color, (health_bar_x, health_bar_y, filled_width, health_bar_height))
+        
+        # Add "Enemy HP" text with an outline below the health bar
+        font = pygame.font.Font(None, 36)  # Font size 36
+
+        # Render the outline by drawing the text multiple times with a slight offset
+        outline_color = (0, 0, 0)  # Black outline
+        enemy_hp_text_outline = font.render("Enemy HP", True, outline_color)
+        for offset_x, offset_y in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Offsets for the outline
+            outline_rect = enemy_hp_text_outline.get_rect(center=(health_bar_x + health_bar_width // 2 + offset_x, health_bar_y + health_bar_height + 20 + offset_y))
+            screen.blit(enemy_hp_text_outline, outline_rect)
+
+        # Render the main text on top of the outline
+        text_color = (255, 255, 255)  # White text
+        enemy_hp_text = font.render("Enemy HP", True, text_color)
+        enemy_hp_text_rect = enemy_hp_text.get_rect(center=(health_bar_x + health_bar_width // 2, health_bar_y + health_bar_height + 20))
+        screen.blit(enemy_hp_text, enemy_hp_text_rect)
         
         # Draw the circle for the EnemyIcon
         circle_x = health_bar_x + health_bar_width + 40  # Position next to the health bar
@@ -473,7 +509,7 @@ while True:
     elif Victory:
         # The "You Win!" text
         font = pygame.font.Font(None, 72)
-        text = font.render("You win", True, (255, 255, 255))
+        text = font.render("You Win!!", True, (255, 255, 255))
         text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
         screen.blit(text, text_rect)
 
@@ -511,6 +547,27 @@ while True:
         if continue_click:
             pygame.quit()
             subprocess.run(["python", "level2.py"])
+            sys.exit()
+        
+        # Return to Main Menu Button
+        menu_button_y = button_y + button_height + 20
+        pygame.draw.rect(screen, button_color, (button_x, menu_button_y, button_width, button_height))
+        menu_text = font.render("Main Menu", True, button_text_color)
+        menu_text_rect = menu_text.get_rect(center=(button_x + button_width//2, menu_button_y + button_height//2))
+        screen.blit(menu_text, menu_text_rect)
+
+        menu_hover = button_x <= mouse_x <= button_x + button_width and menu_button_y <= mouse_y <= menu_button_y + button_height
+        menu_click = menu_hover and mouse_pressed[0]
+        menu_display_color = click_color if menu_click else hover_color if menu_hover else button_color
+
+        pygame.draw.rect(screen, menu_display_color, (button_x, menu_button_y, button_width, button_height))
+        menu_text = font.render("Main Menu", True, button_text_color)
+        menu_text_rect = menu_text.get_rect(center=(button_x + button_width//2, menu_button_y + button_height//2))
+        screen.blit(menu_text, menu_text_rect)
+
+        if menu_click:
+            pygame.quit()
+            subprocess.run(["python", "Main_Menu.py"])  # Return to Main_Menu.py
             sys.exit()
     pygame.display.flip()
     clock.tick(60)
