@@ -65,7 +65,7 @@ def GifLoading(file_path, width, height):
 
     return frames
 
-#Level 1 coding
+#Level 2 coding
 #loading all the pictures, sounds, and animation
 #Player
 PlayerIdleIMG = cv2.imread("Images\\Player\\Idle.png", cv2.IMREAD_UNCHANGED)
@@ -84,16 +84,16 @@ PlayerLowAud = pygame.mixer.Sound('Audio\\Player\\LowHealth.mp3')
 PlayerLowAud.set_volume(0.5)
 
 #Enemy
-EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level1\\Idle.png', cv2.IMREAD_UNCHANGED)
-EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level1\\Block.png', cv2.IMREAD_UNCHANGED)
-EnemyAttackWindUpIMG = cv2.imread('Images\\Enemy\\Level1\\Attack_Wind-up.png', cv2.IMREAD_UNCHANGED)
-EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level1\\Attack.png', cv2.IMREAD_UNCHANGED)
+EnemyIdleIMG = cv2.imread('Images\\Enemy\\Level2\\Idle.png', cv2.IMREAD_UNCHANGED)
+EnemyBlockIMG = cv2.imread('Images\\Enemy\\Level2\\Block.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackWindUpIMG = cv2.imread('Images\\Enemy\\Level2\\WindUp.png', cv2.IMREAD_UNCHANGED)
+EnemyAttackIMG = cv2.imread('Images\\Enemy\\Level2\\Attack.png', cv2.IMREAD_UNCHANGED)
 
 # Define the circle radius
-circle_radius = 25  # Adjust this value as needed
+circle_radius = 23  # Adjust this value as needed
 
 # Load the EnemyIcon
-EnemyIcon = cv2.imread('Images\\Enemy\\Level1\\EnemyIcon.png', cv2.IMREAD_UNCHANGED)
+EnemyIcon = cv2.imread('Images\\Enemy\\Level2\\Icon.png', cv2.IMREAD_UNCHANGED)
 
 # Resize the EnemyIcon proportionally to fit inside the circle
 icon_height, icon_width = EnemyIcon.shape[:2]
@@ -104,13 +104,13 @@ new_height = int(icon_height * scale)
 EnemyIcon = resize(EnemyIcon, new_width, new_height)
 
 #Enemy Sound Effects
-EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyPunchingSound.mp3')
-EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyWindUpSound.ogg')
+EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\NarutoPunch.mp3')
+EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 BoxingBellAud.set_volume(0.4)
 
 #Enemy Animation Effects
-EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\EnemyPunching.gif', 400, 400)
+EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\SlashingEnemy.gif', 400, 400)
 
 #universal block effect
 BlockGIF = GifLoading('Images\\Effect\\Blocking\\Blocking.gif', 400, 400)
@@ -162,7 +162,7 @@ BackgroundAud.play(loops=-1)
 
 #Health system
 PlayerHealth = 3
-EnemyHealth = 10
+EnemyHealth = 15
 playerDamaged = False
 LowHealth = False
 
@@ -222,11 +222,11 @@ EnemyAttackWindUp = False
 EnemyBlocking = False
 EnemyAttack_timer = 0
 EnemyAttackWindUp_timer = 0
-EnemyAttackWindUp_duration = 1000
-EnemyAttack_duration = 500
-EnemyBlock_duration = random.randint(1000, 3000)
-EnemyAttack_cooldown = random.randint(4000, 6000)
-EnemyBlock_cooldown = 1500
+EnemyAttackWindUp_duration = 3000
+EnemyAttack_duration = 1000
+EnemyBlock_duration = random.randint(2000, 6000)
+EnemyAttack_cooldown = random.randint(2000, 3000)
+EnemyBlock_cooldown = 500
 last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding
@@ -355,10 +355,10 @@ while True:
             random_audience_flash(screen, num_flashes=5)
         
         # Draw the health bar
-        health_bar_width = 200
-        health_bar_height = 20
-        health_bar_x = 20
-        health_bar_y = 20
+        health_bar_width = 150      
+        health_bar_height = 15  
+        health_bar_x = 15
+        health_bar_y = 15
         health_bar_border_color = (255, 255, 255)
         health_bar_fill_color = (255, 0, 0)
 
@@ -388,7 +388,7 @@ while True:
         screen.blit(enemy_hp_text, enemy_hp_text_rect)
         
         # Draw the circle for the EnemyIcon
-        circle_x = health_bar_x + health_bar_width + 40  # Position next to the health bar
+        circle_x = health_bar_x + health_bar_width + 105  # Position next to the health bar
         circle_y = health_bar_y + health_bar_height // 2
         circle_radius = 25
         circle_color = (255, 255, 255)
@@ -398,7 +398,7 @@ while True:
         # Create a circular mask for the EnemyIcon
         icon_surface = pygame.Surface((circle_diameter, circle_diameter), pygame.SRCALPHA)
         pygame.draw.circle(icon_surface, (255, 255, 255, 255), (circle_radius, circle_radius), circle_radius)
-        icon_surface.blit(EnemyIcon, (circle_radius - new_width // 2 + 18, circle_radius - new_height // 2), special_flags=pygame.BLEND_RGBA_MIN)
+        icon_surface.blit(EnemyIcon, (circle_radius - new_width // 1.5 + 12, circle_radius - new_height // 2), special_flags=pygame.BLEND_RGBA_MIN)
 
         # Blit the masked EnemyIcon onto the screen
         screen.blit(icon_surface, (circle_x - circle_radius, circle_y - circle_radius))
