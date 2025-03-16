@@ -8,6 +8,21 @@ import random
 
 pygame.mixer.init()
 
+def random_audience_flash(screen, num_flashes):
+    for _ in range(num_flashes):
+        flash_x = random.randint(0, screen_width)
+        flash_y = random.randint(0, screen_height - 500)
+        flash_size = random.randint(1,2)
+
+        for i in range(10, 0, -1):
+            alpha = int(255 * i / 75)
+            glow_colour = (255, 255, 255, alpha)
+            glow_surface = pygame.Surface((flash_size * 4 * i, flash_size * 4 * i), pygame.SRCALPHA)
+            pygame.draw.circle(glow_surface, glow_colour, (flash_size * 2 * i, flash_size * 2 * i), flash_size * 2 * i)
+            screen.blit(glow_surface, (flash_x - flash_size * 2 * i, flash_y - flash_size * 2 * i))
+
+        pygame.draw.circle(screen, (255, 255, 255), (flash_x, flash_y), flash_size)
+
 def convertIMG(img):
     if img is None:
         return None
@@ -334,6 +349,10 @@ while True:
 
         #Background image
         screen.blit(BackgroundIMG, (0,0))
+
+
+        if random.random() < 0.05: #This controls probability of flash happening
+            random_audience_flash(screen, num_flashes=5)
         
         # Draw the health bar
         health_bar_width = 200
