@@ -225,7 +225,7 @@ EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 3000
 EnemyAttack_duration = 1000
 EnemyBlock_duration = random.randint(2000, 6000)
-EnemyAttack_cooldown = random.randint(2000, 3000)
+EnemyAttack_cooldown = random.randint(1000, 3000)
 EnemyBlock_cooldown = 500
 last_enemy_attack_time = pygame.time.get_ticks()
 
@@ -355,7 +355,7 @@ while True:
             random_audience_flash(screen, num_flashes=5)
         
         # Draw the health bar
-        health_bar_width = 150      
+        health_bar_width = 150
         health_bar_height = 15  
         health_bar_x = 15
         health_bar_y = 15
@@ -363,7 +363,7 @@ while True:
         health_bar_fill_color = (255, 0, 0)
 
         # Draw the border of the health bar
-        pygame.draw.rect(screen, health_bar_border_color, (health_bar_x, health_bar_y, health_bar_width, health_bar_height), 2)
+        pygame.draw.rect(screen, health_bar_border_color, (health_bar_x, health_bar_y, health_bar_width, health_bar_height),2)
 
         # Calculate the width of the filled portion based on PlayerHealth
         filled_width = int((EnemyHealth / 10) * health_bar_width)
