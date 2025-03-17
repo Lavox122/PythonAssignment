@@ -105,7 +105,9 @@ EnemyIcon = resize(EnemyIcon, new_width, new_height)
 
 #Enemy Sound Effects
 EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\NarutoPunch.mp3')
+EnemyPunchAud.set_volume(0.1)
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
+EnemyWindUpAud.set_volume(0.1)
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 BoxingBellAud.set_volume(0.4)
 
@@ -229,6 +231,9 @@ EnemyAttack_cooldown = random.randint(2500, 3000)
 EnemyBlock_cooldown = 3500
 last_enemy_attack_time = pygame.time.get_ticks()
 
+check_interval = 500
+last_check_time = 0
+
 #The game coding
 while True:
     current_time = pygame.time.get_ticks()
@@ -296,16 +301,18 @@ while True:
                 elif blocking:
                     PlayerBlockAud.play()
 
-            if EnemyAttacking and (current_time - EnemyAttack_timer > EnemyAttack_duration):
-                if not blocking:
-                    PlayerHealth -= 1
-                    playerDamaged = True
-                    print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
+            if EnemyAttacking:
+                if current_time - last_check_time >= check_interval:
+                    last_check_time = current_time
+                    if not blocking:
+                        PlayerHealth -= 1
+                        playerDamaged = True
+                        print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
                 
-                
-                EnemyAttacking = False
-                last_enemy_attack_time = current_time
-                EnemyAttack_cooldown = random.randint(1000, 5000)
+                if current_time - EnemyAttack_timer > EnemyAttack_duration:
+                    EnemyAttacking = False
+                    last_enemy_attack_time = current_time
+                    EnemyAttack_cooldown = random.randint(3000, 4000)
 
         if EnemyBlocking and (current_time - EnemyBlock_timer > EnemyBlock_duration):
             EnemyBlocking = False
