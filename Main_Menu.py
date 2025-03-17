@@ -42,6 +42,13 @@ def main_menu():
         # Draw the title
         title_text = title_font.render("Underground Arena", True, white)
         title_rect = title_text.get_rect(center=(screen_width // 2, 150))
+
+        outline_color = black
+        for offset_x, offset_y in [(-4, -4), (-4, 4), (4, -4), (4, 4)]:
+            outline_text = title_font.render("Underground Arena", True, outline_color)
+            outline_rect = outline_text.get_rect(center=(screen_width // 2 + offset_x, 150 + offset_y))
+            screen.blit(outline_text, outline_rect)
+
         screen.blit(title_text, title_rect)
 
         # Draw the Start Game button
@@ -68,7 +75,7 @@ def main_menu():
                 # Check if Start Game button is clicked
                 if start_button_x <= mouse_x <= start_button_x + button_width and start_button_y <= mouse_y <= start_button_y + button_height:
                     pygame.quit()
-                    subprocess.run(["python", "Main.py"])  # Launch Main.py
+                    subprocess.run(["python", "level1.py"])  # Launch Main.py
                     sys.exit()
 
                 # Check if Exit button is clicked
