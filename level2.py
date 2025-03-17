@@ -104,10 +104,10 @@ new_height = int(icon_height * scale)
 EnemyIcon = resize(EnemyIcon, new_width, new_height)
 
 #Enemy Sound Effects
-EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\NarutoPunch.mp3')
-EnemyPunchAud.set_volume(0.1)
-EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
-EnemyWindUpAud.set_volume(0.1)
+EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
+EnemyPunchAud.set_volume(0.4)
+EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\SayingRasengan.mp3')
+EnemyWindUpAud.set_volume(0.4)
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 BoxingBellAud.set_volume(0.4)
 
