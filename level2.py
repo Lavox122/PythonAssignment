@@ -110,6 +110,9 @@ EnemyAttackChargeAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
 EnemyAttackChargeAud.set_volume(0.2)
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\SayingRasengan.mp3')
 EnemyWindUpAud.set_volume(0.4)
+EnemyTransformAud = pygame.mixer.Sound('Audio\\Enemy\\Transform.mp3')
+EnemyTransformAud.set_volume(0.5)
+
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 BoxingBellAud.set_volume(0.4)
 
@@ -292,6 +295,7 @@ while True:
                 elif action_choice == "Block":
                     EnemyBlocking = True
                     EnemyBlock_timer = current_time
+                    EnemyTransformAud.play()
 
             if EnemyAttackWindUp and (current_time - EnemyAttackWindUp_timer > EnemyAttackWindUp_duration):
                 EnemyAttackWindUp = False
@@ -313,7 +317,7 @@ while True:
                         print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
                     else:
                         PlayerBlockAud.play()
-                        
+
                 if current_time - EnemyAttack_timer > EnemyAttack_duration:
                     EnemyAttacking = False
                     last_enemy_attack_time = current_time
@@ -516,7 +520,7 @@ while True:
         if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
             if mouse_pressed[0]:
                 PlayerHealth = 3
-                EnemyHealth = 11
+                EnemyHealth = 16
                 GameOver = False
                 last_punch_time = 0
                 last_enemy_attack_time = pygame.time.get_ticks()
