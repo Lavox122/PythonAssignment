@@ -42,6 +42,13 @@ def main_menu():
         # Draw the title
         title_text = title_font.render("Underground Arena", True, white)
         title_rect = title_text.get_rect(center=(screen_width // 2, 150))
+
+        outline_color = black
+        for offset_x, offset_y in [(-4, -4), (-4, 4), (4, -4), (4, 4)]:
+            outline_text = title_font.render("Underground Arena", True, outline_color)
+            outline_rect = outline_text.get_rect(center=(screen_width // 2 + offset_x, 150 + offset_y))
+            screen.blit(outline_text, outline_rect)
+
         screen.blit(title_text, title_rect)
 
         # Draw the Start Game button
