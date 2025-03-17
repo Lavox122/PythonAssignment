@@ -122,6 +122,10 @@ BackgroundIMG = cv2.imread('Images\\Background\\BoxingRing.png', cv2.IMREAD_UNCH
 BackgroundAud= pygame.mixer.Sound('Audio\\Background\\BackgroundAmbience.mp3')
 BackgroundAud.set_volume(0.1)
 
+#HUD Images
+LeftClickIMG = cv2.imread('Images\\HUD\\LeftClick.png', cv2.IMREAD_UNCHANGED)
+RightClickIMG = cv2.imread('Images\\HUD\\RightClick.png', cv2.IMREAD_UNCHANGED)
+
 #Resizing the images after conversion
 PlayerIdleIMG = resize(PlayerIdleIMG, 400, 400, flip= True)
 PlayerBlockIMG = resize(PlayerBlockIMG, 600, 600, flip= True)
@@ -133,6 +137,9 @@ EnemyAttackWindUpIMG = resize(EnemyAttackWindUpIMG, 250, 600)
 EnemyAttackIMG = resize(EnemyAttackIMG, 600, 600)
 
 BackgroundIMG = resize(BackgroundIMG, 800, 600)
+
+LeftClickIMG = resize(LeftClickIMG, 50, 50)
+RightClickIMG = resize(RightClickIMG, 50, 50)
 
 #Animation Settings
 PlayerAttackFrame_index = 0
@@ -205,6 +212,16 @@ EnemyPunchEffect_y = screen_height - 525
 
 BlockGIF_x = screen_width // 2 - 150
 BlockGIF_y = screen_height - 450
+
+left_click_x = 20
+left_click_y = screen_height - 100
+right_click_x = left_click_x + 100
+right_click_y = left_click_y
+
+LeftClickIMG = pygame.transform.flip(LeftClickIMG, True, False)
+RightClickIMG = pygame.transform.flip(RightClickIMG, True, False)
+
+hud_font = pygame.font.Font(None, 24)
 
 #Punch settings (All numbers are in milliseconds)
 punching = False
@@ -454,6 +471,15 @@ while True:
             intensity = int(150 * (1 - (PlayerHealth / 3)))
             overlay.fill((255, 0, 0, intensity))
             screen.blit(overlay, (0, 0))
+
+        screen.blit(LeftClickIMG, (left_click_x, left_click_y))
+        screen.blit(RightClickIMG, (right_click_x, right_click_y))
+
+        left_click_text = hud_font.render("Punch", True, (255, 255, 255))
+        right_click_text = hud_font.render("Block", True, (255, 255, 255))
+
+        screen.blit(left_click_text, (left_click_x, left_click_y + 55))
+        screen.blit(right_click_text, (right_click_x, right_click_y + 55))
 
         #Game Over
     elif GameOver:
