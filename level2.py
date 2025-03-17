@@ -222,11 +222,11 @@ EnemyAttackWindUp = False
 EnemyBlocking = False
 EnemyAttack_timer = 0
 EnemyAttackWindUp_timer = 0
-EnemyAttackWindUp_duration = 3000
-EnemyAttack_duration = 1000
-EnemyBlock_duration = random.randint(2000, 6000)
-EnemyAttack_cooldown = random.randint(1000, 3000)
-EnemyBlock_cooldown = 500
+EnemyAttackWindUp_duration = 1000
+EnemyAttack_duration = 2000
+EnemyBlock_duration = random.randint(2000, 3000)
+EnemyAttack_cooldown = random.randint(2500, 3000)
+EnemyBlock_cooldown = 3500
 last_enemy_attack_time = pygame.time.get_ticks()
 
 #The game coding

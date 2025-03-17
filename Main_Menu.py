@@ -30,17 +30,17 @@ exit_button_x = (screen_width - button_width) // 2
 exit_button_y = 400
 
 # Load the background image
-# background_image = pygame.image.load("Images\\Background\\Main_Menu_Background.jpg")
-# background_image = pygame.transform.scale(background_image, (screen_width, screen_height))  # Scale to fit the screen
+background_image = pygame.image.load("Images\\Background\\BoxingRing.png")
+background_image = pygame.transform.scale(background_image, (screen_width, screen_height))  # Scale to fit the screen
 
 # Main menu loop
 def main_menu():
     while True:
         # Draw the background image
-        #screen.blit(background_image, (0, 0))
+        screen.blit(background_image, (0, 0))
 
         # Draw the title
-        title_text = title_font.render("Underground Arena", True, black)
+        title_text = title_font.render("Underground Arena", True, white)
         title_rect = title_text.get_rect(center=(screen_width // 2, 150))
         screen.blit(title_text, title_rect)
 
