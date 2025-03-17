@@ -225,7 +225,7 @@ EnemyAttackWindUp_timer = 0
 EnemyAttackWindUp_duration = 1000
 EnemyAttack_duration = 500
 EnemyBlock_duration = random.randint(1000, 3000)
-EnemyAttack_cooldown = random.randint(2000, 4000)
+EnemyAttack_cooldown = random.randint(1000, 4000)
 EnemyBlock_cooldown = 3500
 last_enemy_attack_time = pygame.time.get_ticks()
 
@@ -305,7 +305,7 @@ while True:
                 
                 EnemyAttacking = False
                 last_enemy_attack_time = current_time
-                EnemyAttack_cooldown = random.randint(1000, 5000)
+                EnemyAttack_cooldown = random.randint(1000, 4000)
 
         if EnemyBlocking and (current_time - EnemyBlock_timer > EnemyBlock_duration):
             EnemyBlocking = False
