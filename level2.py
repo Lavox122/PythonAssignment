@@ -104,8 +104,10 @@ new_height = int(icon_height * scale)
 EnemyIcon = resize(EnemyIcon, new_width, new_height)
 
 #Enemy Sound Effects
-EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
-EnemyPunchAud.set_volume(0.4)
+EnemyPunchAud = pygame.mixer.Sound('Audio\\Enemy\\EnemyImpact.mp3')
+EnemyPunchAud.set_volume(0.3)
+EnemyAttackChargeAud = pygame.mixer.Sound('Audio\\Enemy\\Rasengan.mp3')
+EnemyAttackChargeAud.set_volume(0.2)
 EnemyWindUpAud = pygame.mixer.Sound('Audio\\Enemy\\SayingRasengan.mp3')
 EnemyWindUpAud.set_volume(0.4)
 BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
@@ -286,6 +288,7 @@ while True:
                     EnemyAttackWindUp = True
                     EnemyAttackWindUp_timer = current_time
                     EnemyWindUpAud.play()
+                    EnemyAttackChargeAud.play()
                 elif action_choice == "Block":
                     EnemyBlocking = True
                     EnemyBlock_timer = current_time
@@ -295,7 +298,6 @@ while True:
                 EnemyAttacking = True
                 EnemyAttack_timer = current_time
                 if not blocking:
-                    EnemyPunchAud.play()
                     EnemyPunchGIF_start_time = current_time
                     EnemyAttackFrame_index = 0
                 elif blocking:
@@ -305,10 +307,13 @@ while True:
                 if current_time - last_check_time >= check_interval:
                     last_check_time = current_time
                     if not blocking:
+                        EnemyPunchAud.play()
                         PlayerHealth -= 1
                         playerDamaged = True
                         print(f"Player Health: {PlayerHealth}") #this is only for debugging purposes
-                
+                    else:
+                        PlayerBlockAud.play()
+                        
                 if current_time - EnemyAttack_timer > EnemyAttack_duration:
                     EnemyAttacking = False
                     last_enemy_attack_time = current_time
