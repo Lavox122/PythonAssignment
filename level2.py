@@ -117,7 +117,7 @@ BoxingBellAud = pygame.mixer.Sound('Audio\\Enemy\\BoxingBellSound.mp3')
 BoxingBellAud.set_volume(0.4)
 
 #Enemy Animation Effects
-EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\SlashingEnemy.gif', 400, 400)
+EnemyPunchGIF = GifLoading('Images\\Effect\\EnemyPunching\\Poof.gif', 400, 400)
 
 #universal block effect
 BlockGIF = GifLoading('Images\\Effect\\Blocking\\Blocking.gif', 400, 400)
