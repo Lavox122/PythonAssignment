@@ -75,7 +75,7 @@ def main_menu():
                 # Check if Start Game button is clicked
                 if start_button_x <= mouse_x <= start_button_x + button_width and start_button_y <= mouse_y <= start_button_y + button_height:
                     pygame.quit()
-                    subprocess.run(["python", "Main.py"])  # Launch Main.py
+                    subprocess.run(["python", "level1.py"])  # Launch Main.py
                     sys.exit()
 
                 # Check if Exit button is clicked
