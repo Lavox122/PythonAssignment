@@ -558,6 +558,7 @@ while True:
         text = font.render("You Win!!", True, (255, 255, 255))
         text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
         screen.blit(text, text_rect)
+        BackgroundAud.stop()
 
         # Continue Button
         button_width = 200

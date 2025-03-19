@@ -569,6 +569,7 @@ while True:
                 
     elif Victory:
         # The "You Win!" text
+        BackgroundAud.stop()
         font = pygame.font.Font(None, 72)
         text = font.render("You Win!!", True, (255, 255, 255))
         text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
