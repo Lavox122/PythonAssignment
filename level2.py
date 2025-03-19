@@ -573,20 +573,10 @@ while True:
         text = font.render("You Win!!", True, (255, 255, 255))
         text_rect = text.get_rect(center=(screen_width//2, screen_height//2 - 100))
         screen.blit(text, text_rect)
-
-        # Continue Button
-        button_width = 200
+        button_width = 300
         button_height = 50
-        button_x = (screen_width - button_width) // 2
-        button_y = screen_height // 2 - 10
         button_color = (255, 255, 255)
         button_text_color = (0, 0, 0)
-
-        pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
-        font = pygame.font.Font(None, 36)
-        button_text = font.render("Continue", True, button_text_color)
-        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
-        screen.blit(button_text, text_rect)
 
         # Mouse position tracking
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -595,35 +585,22 @@ while True:
         hover_color = (200, 200, 200)
         click_color = (150, 150, 150)
 
-        # Continue button function
-        continue_hover = button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height
-        continue_click = continue_hover and mouse_pressed[0]
-        continue_display_color = click_color if continue_click else hover_color if continue_hover else button_color
-
-        pygame.draw.rect(screen, continue_display_color, (button_x, button_y, button_width, button_height))
-        button_text = font.render("Continue", True, button_text_color)
-        text_rect = button_text.get_rect(center=(button_x + button_width//2, button_y + button_height//2))
-        screen.blit(button_text, text_rect)
-
-        if continue_click:
-            pygame.quit()
-            subprocess.run(["python", "level2.py"])
-            sys.exit()
-        
         # Return to Main Menu Button
-        menu_button_y = button_y + button_height + 20
-        pygame.draw.rect(screen, button_color, (button_x, menu_button_y, button_width, button_height))
+        menu_button_x = (screen_width - button_width) // 2
+        menu_button_y = (screen_height - button_height) // 2
+
+        pygame.draw.rect(screen, button_color, (menu_button_x, menu_button_y, button_width, button_height))
         menu_text = font.render("Main Menu", True, button_text_color)
-        menu_text_rect = menu_text.get_rect(center=(button_x + button_width//2, menu_button_y + button_height//2))
+        menu_text_rect = menu_text.get_rect(center=(menu_button_x + button_width // 2, menu_button_y + button_height // 2))
         screen.blit(menu_text, menu_text_rect)
 
-        menu_hover = button_x <= mouse_x <= button_x + button_width and menu_button_y <= mouse_y <= menu_button_y + button_height
+        menu_hover = menu_button_x <= mouse_x <= menu_button_x + button_width and menu_button_y <= mouse_y <= menu_button_y + button_height
         menu_click = menu_hover and mouse_pressed[0]
         menu_display_color = click_color if menu_click else hover_color if menu_hover else button_color
 
-        pygame.draw.rect(screen, menu_display_color, (button_x, menu_button_y, button_width, button_height))
+        pygame.draw.rect(screen, menu_display_color, (menu_button_x, menu_button_y, button_width, button_height))
         menu_text = font.render("Main Menu", True, button_text_color)
-        menu_text_rect = menu_text.get_rect(center=(button_x + button_width//2, menu_button_y + button_height//2))
+        menu_text_rect = menu_text.get_rect(center=(menu_button_x + button_width // 2, menu_button_y + button_height // 2))
         screen.blit(menu_text, menu_text_rect)
 
         if menu_click:
